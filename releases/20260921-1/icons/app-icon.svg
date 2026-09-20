@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YouTube Title Search">
+  <rect width="512" height="512" rx="96" fill="#171d25"/>
+  <rect x="50" y="74" width="412" height="292" rx="54" fill="#0d1117" stroke="#d5d9e2" stroke-width="18"/>
+  <path d="M221 159c0-15 16-25 29-17l104 61c13 8 13 27 0 35l-104 61c-13 8-29-2-29-17z" fill="#f1f3f5"/>
+  <circle cx="155" cy="351" r="78" fill="#171d25" stroke="#4f9d69" stroke-width="28"/>
+  <path d="m210 406 68 68" fill="none" stroke="#4f9d69" stroke-linecap="round" stroke-width="36"/>
+</svg>

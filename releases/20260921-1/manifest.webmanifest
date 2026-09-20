@@ -1,0 +1,27 @@
+{
+  "id": "../../",
+  "name": "YouTube Title Search",
+  "short_name": "Title Search",
+  "description": "入力した全キーワードをタイトルに含むYouTube動画だけを表示する個人用検索PWA",
+  "lang": "ja",
+  "start_url": "../../index.html",
+  "scope": "../../",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1117",
+  "theme_color": "#0f141b",
+  "icons": [
+    {
+      "src": "./icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

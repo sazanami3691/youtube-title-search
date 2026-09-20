@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja" data-app-release="20260921-1">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f141b">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="入力した全キーワードをタイトルに含むYouTube動画だけを表示する個人用検索PWA">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Title Search">
+    <title>YouTube Title Search</title>
+    <link rel="manifest" href="./releases/20260921-1/manifest.webmanifest">
+    <link rel="icon" href="./releases/20260921-1/icons/app-icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./releases/20260921-1/icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="./releases/20260921-1/styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="app-header__inner">
+        <a class="brand" href="./" aria-label="YouTube Title Searchの先頭へ">
+          <img src="./releases/20260921-1/icons/app-icon.svg" alt="" width="48" height="48">
+          <span>
+            <strong>YouTube Title Search</strong>
+            <small>全キーワードをタイトルで確認</small>
+          </span>
+        </a>
+        <div class="header-actions" aria-label="アプリ操作">
+          <button id="api-settings-button" class="button" type="button">APIキー設定</button>
+          <button id="app-update-button" class="button" type="button">アプリを更新</button>
+        </div>
+      </div>
+      <p id="update-status" class="update-status" aria-live="polite"></p>
+    </header>
+
+    <main class="app-main">
+      <section class="panel search-panel" aria-labelledby="search-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">TITLE FILTER SEARCH</p>
+            <h1 id="search-heading">動画タイトルをAND検索</h1>
+          </div>
+          <p class="section-note">空白で区切ったすべての語句が、順不同でタイトルに含まれる動画だけを表示します。</p>
+        </div>
+        <form id="search-form" class="search-form" novalidate>
+          <label for="search-input">検索語句</label>
+          <div class="search-form__row">
+            <input
+              id="search-input"
+              name="query"
+              type="search"
+              inputmode="search"
+              autocomplete="off"
+              placeholder="例: RPG ツクール"
+              aria-describedby="search-help"
+            >
+            <button id="search-button" class="button button--accent" type="submit">検索</button>
+          </div>
+          <p id="search-help" class="help-text">「RPGツクール」は1語、「RPG ツクール」は2語として判定します。</p>
+        </form>
+      </section>
+
+      <section class="panel history-panel" aria-labelledby="history-heading">
+        <div class="panel-title-row">
+          <h2 id="history-heading">検索履歴</h2>
+          <button id="clear-history-button" class="button button--quiet" type="button">履歴を全削除</button>
+        </div>
+        <p class="help-text">この端末だけに最大10件保存します。PCとiPadの間では同期しません。</p>
+        <ul id="history-list" class="history-list"></ul>
+      </section>
+
+      <section class="panel status-panel" aria-labelledby="status-heading">
+        <div class="panel-title-row">
+          <h2 id="status-heading">検索状態</h2>
+          <p id="status-counts" class="status-counts">まだ検索していません</p>
+        </div>
+        <div id="search-progress" class="progress" role="status" hidden>
+          <span class="progress__spinner" aria-hidden="true"></span>
+          YouTube APIから候補を取得しています…
+        </div>
+        <div id="status-message" class="status-message" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <section aria-labelledby="results-heading">
+        <div class="results-heading-row">
+          <div>
+            <p class="eyebrow">MATCHED VIDEOS</p>
+            <h2 id="results-heading">検索結果</h2>
+          </div>
+          <p>API候補を取得後、タイトルを端末内で再判定します。</p>
+        </div>
+        <div id="results" class="results-grid"></div>
+        <div class="load-more-wrap">
+          <button id="load-more-button" class="button button--accent load-more-button" type="button" hidden>さらに読み込む</button>
+        </div>
+        <p class="coverage-note">検索結果はYouTube APIが返した候補に基づきます。YouTube全体の該当動画を完全に網羅するものではありません。</p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>APIキー・検索履歴・PWAキャッシュは、それぞれ別の保存領域として管理します。</p>
+    </footer>
+
+    <div id="settings-dialog" class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+      <section id="settings-panel" class="modal__panel" tabindex="-1">
+        <div class="modal__header">
+          <div>
+            <p class="eyebrow">DEVICE SETTINGS</p>
+            <h2 id="settings-title">APIキー設定</h2>
+          </div>
+          <button id="settings-close-button" class="icon-button" type="button" aria-label="APIキー設定を閉じる">閉じる</button>
+        </div>
+
+        <p id="key-status" class="key-status"></p>
+        <div class="security-notice">
+          <strong>APIキーはこの端末のブラウザ内に保存されます。</strong>
+          <p>PCとiPadでは、それぞれ一度ずつ設定が必要です。ブラウザ内のキーは端末利用者から完全には隠せないため、Google Cloud側でAPIとWebサイトの利用制限を設定してください。</p>
+          <p>APIキーをGitHub、チャット、スクリーンショット、ログへ貼らないでください。Codexにも入力しないでください。</p>
+        </div>
+
+        <form id="key-form" novalidate>
+          <div id="key-form-fields">
+            <label for="api-key-input">YouTube Data API v3 のAPIキー</label>
+            <div class="key-input-row">
+              <input id="api-key-input" type="password" autocomplete="off" spellcheck="false" aria-describedby="key-message">
+              <button id="toggle-key-button" class="button" type="button">表示</button>
+            </div>
+            <button id="save-key-button" class="button button--accent button--full" type="submit">保存して接続確認</button>
+            <p class="help-text">接続確認ではYouTube検索APIを1回呼び出します。</p>
+          </div>
+        </form>
+
+        <p id="key-message" class="key-message" role="status" aria-live="polite"></p>
+        <div class="settings-actions">
+          <button id="change-key-button" class="button" type="button" hidden>APIキーを変更</button>
+          <button id="delete-key-button" class="button button--danger" type="button" hidden>保存したAPIキーを削除</button>
+        </div>
+        <p class="help-text">APIキーを削除しても検索履歴は削除しません。詳しい取得手順はREADMEの「初めてのAPIキー設定」を参照してください。</p>
+      </section>
+    </div>
+
+    <script type="module" src="./releases/20260921-1/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "youtube-title-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node tests/run-tests.mjs",
+    "check": "node tests/static-check.mjs && node tests/run-tests.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
